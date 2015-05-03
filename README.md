@@ -1,4 +1,5 @@
 # miles
+[![Build Status](https://travis-ci.org/asmarques/miles.svg)](https://travis-ci.org/asmarques/miles)
 
 Calculate the distance flown for a given itinerary.
 
