@@ -9,7 +9,7 @@ import (
 const fallbackDbPath = "$GOPATH/src/github.com/asmarques/miles/airports.csv"
 
 var (
-	dbPath = flag.String("db", "airports.csv", "path to airport database")
+	dbPath  = flag.String("db", "airports.csv", "path to airport database")
 	verbose = flag.Bool("v", false, "verbose output")
 )
 

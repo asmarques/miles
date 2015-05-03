@@ -23,7 +23,7 @@ func printText(p *path, w io.Writer, v bool) {
 		distance := int(math.Floor(pair.distance + 0.5))
 
 		if v {
-			fmt.Fprintf(w, "%d miles\n\n", distance)	
+			fmt.Fprintf(w, "%d miles\n\n", distance)
 		} else {
 			fmt.Fprintf(w, "%d\tmiles\n", distance)
 		}
