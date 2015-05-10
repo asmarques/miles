@@ -24,10 +24,11 @@ $ miles LIS EWR SFO EWR LIS
 ```
 
 The `miles` command supports the following options:
-  - `-db` to specify the path to the airport database. If not provided, the following locations will be searched:
+  - `-d` to specify the path to the airport database. If not provided, the following locations will be searched:
     - ./airports.csv
     - $GOPATH/src/github.com/asmarques/miles/airports.csv
-  - `-v` to enable verbose output. Includes additional airport information such as airport name, country, latitute and longitude.
+  - `-o` choose the output format. Available formats are: `text` (default) and `json`.
+  - `-v` to enable verbose output when using the `text` output format. Includes additional airport information such as airport name, country, latitute and longitude.
 
 ## License
 

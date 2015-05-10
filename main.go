@@ -9,13 +9,15 @@ import (
 const fallbackDbPath = "$GOPATH/src/github.com/asmarques/miles/airports.csv"
 
 var (
-	dbPath  = flag.String("db", "airports.csv", "path to airport database")
-	verbose = flag.Bool("v", false, "verbose output")
+	dbPath       = flag.String("d", "airports.csv", "path to airport database")
+	outputFormat = flag.String("o", "text", "output format (text, json)")
+	verbose      = flag.Bool("v", false, "verbose output")
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "usage: %s [-v] [-db file] ap1 ap2 ...\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "usage: %s [-d file] [-o text|json] [-v] ap1 ap2 ...\n", os.Args[0])
 	flag.PrintDefaults()
+	os.Exit(2)
 }
 
 func exit(err error) {
@@ -35,7 +37,17 @@ func main() {
 	route := flag.Args()
 	if len(route) < 2 {
 		flag.Usage()
-		os.Exit(2)
+	}
+
+	var f formatter
+
+	switch *outputFormat {
+	case "text":
+		f = printText
+	case "json":
+		f = printJson
+	default:
+		flag.Usage()
 	}
 
 	db, err := readAirports(*dbPath)
@@ -48,5 +60,5 @@ func main() {
 		exit(fmt.Errorf("error generating path: %s", err))
 	}
 
-	printText(p, os.Stdout, *verbose)
+	f(p, os.Stdout, *verbose)
 }

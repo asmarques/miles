@@ -47,25 +47,25 @@ func readAirports(file string) (database, error) {
 		}
 
 		apt := new(airport)
-		apt.name = record[nameField]
-		apt.country = record[countryField]
-		apt.city = record[cityField]
-		apt.icao = record[icaoField]
-		apt.iata = record[iataField]
+		apt.Name = record[nameField]
+		apt.Country = record[countryField]
+		apt.City = record[cityField]
+		apt.Icao = record[icaoField]
+		apt.Iata = record[iataField]
 
 		lat, err := strconv.ParseFloat(record[latField], 64)
 		if err != nil {
 			return nil, err
 		}
-		apt.lat = lat
+		apt.Lat = lat
 
 		long, err := strconv.ParseFloat(record[longField], 64)
 		if err != nil {
 			return nil, err
 		}
-		apt.long = long
+		apt.Long = long
 
-		db[apt.iata] = apt
+		db[apt.Iata] = apt
 	}
 
 	return db, nil
