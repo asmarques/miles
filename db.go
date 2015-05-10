@@ -14,7 +14,7 @@ const (
 	latField     = 4
 	longField    = 5
 	countryField = 8
-	cityField    = 9
+	cityField    = 10
 	icaoField    = 12
 	iataField    = 13
 )
