@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/csv"
 	"io"
+	"net/http"
 	"os"
 	"strconv"
 
@@ -21,8 +22,46 @@ const (
 	iataField    = 13
 )
 
-// ReadAirports reads the airport database from a given file
-func ReadAirports(file string) (Database, error) {
+const (
+	fallbackPath = "$GOPATH/src/github.com/asmarques/miles/airports.csv"
+	srcURL       = "http://ourairports.com/data/airports.csv"
+)
+
+// Update updates the file containing the airport database
+func Update(file string) error {
+	updatefile := file + ".part"
+	out, err := os.Create(updatefile)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	resp, err := http.Get(srcURL)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	os.Rename(updatefile, file)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Read reads the airport database from a given file
+func Read(file string) (Database, error) {
+	_, err := os.Stat(file)
+	if os.IsNotExist(err) {
+		file = os.ExpandEnv(fallbackPath)
+	}
+
 	f, err := os.Open(file)
 	if err != nil {
 		return nil, err

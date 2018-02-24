@@ -12,16 +12,15 @@ import (
 	"github.com/asmarques/miles/format"
 )
 
-const fallbackDbPath = "$GOPATH/src/github.com/asmarques/miles/airports.csv"
-
 var (
 	dbPath       = flag.String("d", "airports.csv", "path to airport database")
+	dbUpdate     = flag.Bool("u", false, "download an updated copy of the airport databse")
 	outputFormat = flag.String("o", "text", "output format (text, json)")
 	verbose      = flag.Bool("v", false, "verbose output")
 )
 
 func usage() {
-	log.Printf("usage: %s [-d file] [-o text|json] [-v] ap1 ap2 ...\n", os.Args[0])
+	log.Printf("usage: %s [-d file] [-u] [-o text|json] [-v] ap1 ap2 ...\n", os.Args[0])
 	flag.PrintDefaults()
 	os.Exit(2)
 }
@@ -30,11 +29,6 @@ func main() {
 	log.SetFlags(0)
 	flag.Usage = usage
 	flag.Parse()
-
-	_, err := os.Stat(*dbPath)
-	if os.IsNotExist(err) {
-		*dbPath = os.ExpandEnv(fallbackDbPath)
-	}
 
 	route := flag.Args()
 	if len(route) < 2 {
@@ -52,7 +46,14 @@ func main() {
 		flag.Usage()
 	}
 
-	db, err := db.ReadAirports(*dbPath)
+	if *dbUpdate {
+		err := db.Update(*dbPath)
+		if err != nil {
+			log.Fatalf("error downloading updated airport database: %s", err)
+		}
+	}
+
+	db, err := db.Read(*dbPath)
 	if err != nil {
 		log.Fatalf("error reading airport database: %s", err)
 	}
