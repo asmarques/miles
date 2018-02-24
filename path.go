@@ -29,7 +29,7 @@ func generatePath(db database, codes []string) (*path, error) {
 		if last != nil {
 			distance, err := distance(last, apt)
 			if err != nil {
-				return nil, fmt.Errorf("error calculating distance between %s and %s\n", last.Iata, apt.Iata)
+				return nil, fmt.Errorf("error calculating distance between %s and %s", last.Iata, apt.Iata)
 			}
 
 			s := new(segment)
@@ -48,8 +48,8 @@ func generatePath(db database, codes []string) (*path, error) {
 }
 
 func distance(ap1 *airport, ap2 *airport) (float64, error) {
-	p1 := geodist.Point{ap1.Lat, ap1.Long}
-	p2 := geodist.Point{ap2.Lat, ap2.Long}
+	p1 := geodist.Point{Lat: ap1.Lat, Long: ap1.Long}
+	p2 := geodist.Point{Lat: ap2.Lat, Long: ap2.Long}
 
 	d, err := geodist.VincentyDistance(p1, p2)
 	if err != nil {

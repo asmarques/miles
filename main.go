@@ -45,7 +45,7 @@ func main() {
 	case "text":
 		f = printText
 	case "json":
-		f = printJson
+		f = printJSON
 	default:
 		flag.Usage()
 	}

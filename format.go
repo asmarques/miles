@@ -40,7 +40,7 @@ func printText(p *path, w io.Writer, v bool) {
 	}
 }
 
-func printJson(p *path, w io.Writer, v bool) {
+func printJSON(p *path, w io.Writer, v bool) {
 	b, err := json.Marshal(p)
 	if err != nil {
 		fmt.Printf("error generating json output")
