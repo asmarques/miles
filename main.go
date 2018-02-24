@@ -3,7 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
+	"strings"
+
+	"github.com/asmarques/miles/db"
+	"github.com/asmarques/miles/flight"
+	"github.com/asmarques/miles/format"
 )
 
 const fallbackDbPath = "$GOPATH/src/github.com/asmarques/miles/airports.csv"
@@ -15,17 +21,13 @@ var (
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "usage: %s [-d file] [-o text|json] [-v] ap1 ap2 ...\n", os.Args[0])
+	log.Printf("usage: %s [-d file] [-o text|json] [-v] ap1 ap2 ...\n", os.Args[0])
 	flag.PrintDefaults()
 	os.Exit(2)
 }
 
-func exit(err error) {
-	fmt.Fprintln(os.Stderr, err)
-	os.Exit(1)
-}
-
 func main() {
+	log.SetFlags(0)
 	flag.Usage = usage
 	flag.Parse()
 
@@ -39,26 +41,54 @@ func main() {
 		flag.Usage()
 	}
 
-	var f formatter
+	var formatter format.Formatter
 
 	switch *outputFormat {
 	case "text":
-		f = printText
+		formatter = format.TextFormatter
 	case "json":
-		f = printJSON
+		formatter = format.JSONFormatter
 	default:
 		flag.Usage()
 	}
 
-	db, err := readAirports(*dbPath)
+	db, err := db.ReadAirports(*dbPath)
 	if err != nil {
-		exit(fmt.Errorf("error reading airport database: %s", err))
+		log.Fatalf("error reading airport database: %s", err)
 	}
 
-	p, err := generatePath(db, route)
+	path, err := generatePath(db, route)
 	if err != nil {
-		exit(fmt.Errorf("error generating path: %s", err))
+		log.Fatalf("error generating path: %s", err)
 	}
 
-	f(p, os.Stdout, *verbose)
+	err = formatter.Write(path, os.Stdout, *verbose)
+	if err != nil {
+		log.Fatalf("error formatting path: %s", err)
+	}
+}
+
+func generatePath(db db.Database, codes []string) (*flight.Path, error) {
+	var lastAirport *flight.Airport
+	var segments []*flight.Segment
+
+	for _, code := range codes {
+		code = strings.ToUpper(strings.TrimSpace(code))
+
+		airport := db.GetAirport(code)
+		if airport == nil {
+			return nil, fmt.Errorf("airport not found: %s", code)
+		}
+
+		if lastAirport != nil {
+			segments = append(segments, &flight.Segment{
+				Origin:      lastAirport,
+				Destination: airport,
+			})
+		}
+		lastAirport = airport
+	}
+
+	path := &flight.Path{Segments: segments}
+	return path, nil
 }

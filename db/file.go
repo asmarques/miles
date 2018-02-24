@@ -1,10 +1,12 @@
-package main
+package db
 
 import (
 	"encoding/csv"
 	"io"
 	"os"
 	"strconv"
+
+	"github.com/asmarques/miles/flight"
 )
 
 const recordSize = 18
@@ -19,18 +21,19 @@ const (
 	iataField    = 13
 )
 
-func readAirports(file string) (database, error) {
+// ReadAirports reads the airport database from a given file
+func ReadAirports(file string) (Database, error) {
 	f, err := os.Open(file)
-	defer f.Close()
-
 	if err != nil {
 		return nil, err
 	}
 
-	db := make(map[string]*airport)
+	defer f.Close()
+
+	db := make(database)
 	reader := csv.NewReader(f)
 	reader.FieldsPerRecord = recordSize
-	header := true
+	records := 0
 
 	for {
 		record, err := reader.Read()
@@ -41,31 +44,33 @@ func readAirports(file string) (database, error) {
 			return nil, err
 		}
 
-		if header {
-			header = false
+		records++
+
+		if records == 1 {
 			continue
 		}
-
-		apt := new(airport)
-		apt.Name = record[nameField]
-		apt.Country = record[countryField]
-		apt.City = record[cityField]
-		apt.Icao = record[icaoField]
-		apt.Iata = record[iataField]
 
 		lat, err := strconv.ParseFloat(record[latField], 64)
 		if err != nil {
 			return nil, err
 		}
-		apt.Lat = lat
 
 		long, err := strconv.ParseFloat(record[longField], 64)
 		if err != nil {
 			return nil, err
 		}
-		apt.Long = long
 
-		db[apt.Iata] = apt
+		airport := &flight.Airport{
+			Name:    record[nameField],
+			Country: record[countryField],
+			City:    record[cityField],
+			Icao:    record[icaoField],
+			Iata:    record[iataField],
+			Lat:     lat,
+			Long:    long,
+		}
+
+		db[airport.Iata] = airport
 	}
 
 	return db, nil
