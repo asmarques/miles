@@ -51,7 +51,7 @@ func (kf *kmlFormatter) Write(path *flight.Path, writer io.Writer, verbose bool)
 	var placemarks []kmlPlacemark
 
 	styles := []kmlStyle{
-		kmlStyle{
+		{
 			ID:        styleID,
 			LineColor: lineColor,
 			LineWidth: lineWidth,
