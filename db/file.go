@@ -23,8 +23,7 @@ const (
 )
 
 const (
-	fallbackPath = "$GOPATH/src/github.com/asmarques/miles/airports.csv"
-	srcURL       = "http://ourairports.com/data/airports.csv"
+	srcURL = "http://ourairports.com/data/airports.csv"
 )
 
 // Update updates the file containing the airport database
@@ -57,11 +56,6 @@ func Update(file string) error {
 
 // Read reads the airport database from a given file
 func Read(file string) (Database, error) {
-	_, err := os.Stat(file)
-	if os.IsNotExist(err) {
-		file = os.ExpandEnv(fallbackPath)
-	}
-
 	f, err := os.Open(file)
 	if err != nil {
 		return nil, err

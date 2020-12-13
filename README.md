@@ -1,4 +1,5 @@
 # miles
+
 [![Build Status](https://travis-ci.org/asmarques/miles.svg)](https://travis-ci.org/asmarques/miles)
 
 Calculate the distance flown for a given itinerary.
@@ -24,12 +25,11 @@ $ miles LIS EWR SFO EWR LIS
 ```
 
 The `miles` command supports the following options:
-  - `-d` to specify the path to the airport database. If not provided, the following locations will be searched:
-    - ./airports.csv
-    - $GOPATH/src/github.com/asmarques/miles/airports.csv
-  - `-u` download an updated copy of the airport database
-  - `-o` choose the output format. Available formats are: `text` (default) and `json`.
-  - `-v` to enable verbose output when using the `text` output format. Includes additional airport information such as airport name, country, latitute and longitude.
+
+- `-d` to specify the path to the airport database.
+- `-u` download an updated copy of the airport database
+- `-o` choose the output format. Available formats are: `text` (default) and `json`.
+- `-v` to enable verbose output when using the `text` output format. Includes additional airport information such as airport name, country, latitute and longitude.
 
 ## License
 
