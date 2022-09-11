@@ -20,7 +20,7 @@ var (
 )
 
 func usage() {
-	log.Printf("usage: %s [-d file] [-u] [-o text|json|kml] [-v] ap1 ap2 ...\n", os.Args[0])
+	log.Printf("usage: %s [-d file] [-u] [-o text|json|kml] [-v] ap1 ap2 ...\n", os.Args[0])
 	flag.PrintDefaults()
 	os.Exit(2)
 }
