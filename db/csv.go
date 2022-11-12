@@ -1,10 +1,9 @@
 package db
 
 import (
+	_ "embed"
 	"encoding/csv"
 	"io"
-	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/asmarques/miles/flight"
@@ -22,54 +21,16 @@ const (
 	iataField    = 13
 )
 
-const (
-	srcURL = "http://ourairports.com/data/airports.csv"
-)
-
-// Update updates the file containing the airport database
-func Update(file string) error {
-	updatefile := file + ".part"
-	out, err := os.Create(updatefile)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	resp, err := http.Get(srcURL)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		return err
-	}
-
-	os.Rename(updatefile, file)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Read reads the airport database from a given file
-func Read(file string) (Database, error) {
-	f, err := os.Open(file)
-	if err != nil {
-		return nil, err
-	}
-
-	defer f.Close()
-
-	db := make(database)
-	reader := csv.NewReader(f)
-	reader.FieldsPerRecord = recordSize
+// Read reads the airport database from a CSV
+func Read(reader io.Reader) (Database, error) {
+	csvReader := csv.NewReader(reader)
+	csvReader.FieldsPerRecord = recordSize
 	records := 0
 
+	db := make(database)
+
 	for {
-		record, err := reader.Read()
+		record, err := csvReader.Read()
 		if err != nil {
 			if err == io.EOF {
 				break

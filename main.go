@@ -1,8 +1,10 @@
 package main
 
 import (
+	_ "embed"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -13,14 +15,16 @@ import (
 )
 
 var (
-	dbPath       = flag.String("d", "airports.csv", "path to airport database")
-	dbUpdate     = flag.Bool("u", false, "download an updated copy of the airport databse")
+	dbPath       = flag.String("d", "", "path to airport database (use embedded database if not supplied)")
 	outputFormat = flag.String("o", "text", "output format (text, json)")
 	verbose      = flag.Bool("v", false, "verbose output")
 )
 
+//go:embed airports.csv
+var airportsCsv string
+
 func usage() {
-	log.Printf("usage: %s [-d file] [-u] [-o text|json|kml] [-v] ap1 ap2 ...\n", os.Args[0])
+	log.Printf("usage: %s [-d file] [-o text|json|kml] [-v] ap1 ap2 ...\n", os.Args[0])
 	flag.PrintDefaults()
 	os.Exit(2)
 }
@@ -48,16 +52,21 @@ func main() {
 		flag.Usage()
 	}
 
-	if *dbUpdate {
-		err := db.Update(*dbPath)
+	var reader io.Reader
+	if *dbPath != "" {
+		f, err := os.Open(*dbPath)
 		if err != nil {
-			log.Fatalf("error downloading updated airport database: %s", err)
+			log.Fatalf("error reading airport database file: %s", err)
 		}
+		defer f.Close()
+		reader = f
+	} else {
+		reader = strings.NewReader(airportsCsv)
 	}
 
-	db, err := db.Read(*dbPath)
+	db, err := db.Read(reader)
 	if err != nil {
-		log.Fatalf("error reading airport database: %s", err)
+		log.Fatalf("error processing airport database: %s", err)
 	}
 
 	path, err := generatePath(db, route)
