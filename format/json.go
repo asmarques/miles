@@ -45,7 +45,7 @@ func (jf *jsonFormatter) Write(path *flight.Path, writer io.Writer, verbose bool
 		fmt.Printf("error generating json output: %s", err)
 	}
 
-	_, err = fmt.Print(result)
+	_, err = fmt.Printf("%s", result)
 	if err != nil {
 		return fmt.Errorf("error writing to output: %s", err)
 	}
