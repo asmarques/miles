@@ -16,7 +16,7 @@ import (
 
 var (
 	dbPath       = flag.String("d", "", "path to airport database (use embedded database if not supplied)")
-	outputFormat = flag.String("o", "text", "output format (text, json)")
+	outputFormat = flag.String("o", "text", "output format (text, json, kml)")
 	verbose      = flag.Bool("v", false, "verbose output")
 )
 
