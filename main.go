@@ -20,6 +20,7 @@ var (
 	verbose      = flag.Bool("v", false, "verbose output")
 )
 
+//go:generate curl -sLo airports.csv https://davidmegginson.github.io/ourairports-data/airports.csv
 //go:embed airports.csv
 var airportsCsv string
 
